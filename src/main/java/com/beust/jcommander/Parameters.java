@@ -52,6 +52,11 @@ public @interface Parameters {
   String optionPrefixes() default DEFAULT_OPTION_PREFIXES;
 
   /**
+   * What characters an option starts with.
+   */
+  String optionTerminator() default "";
+
+  /**
    * If the annotated class was added to {@link JCommander} as a command with
    * {@link JCommander#addCommand}, then this string will be displayed in the
    * description when @{link JCommander#usage} is invoked.

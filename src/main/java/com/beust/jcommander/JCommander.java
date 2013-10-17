@@ -468,6 +468,11 @@ public class JCommander {
     return result;
   }
 
+  private boolean isTerminating(String arg) {
+    p(arg+".equals "+m_optionTerminator+" == "+arg.equals(m_optionTerminator));
+    return arg.equals(m_optionTerminator);
+  }
+  
   /**
    * Reads the file specified by filename and returns the file content as a string.
    * End of lines are replaced by a space.
@@ -676,6 +681,7 @@ public class JCommander {
     // to stop parsing (the parsing of the command will be done in a sub JCommander
     // object)
     boolean commandParsed = false;
+    boolean optionsTerminated = false;
     int i = 0;
     while (i < args.length && ! commandParsed) {
       String arg = args[i];
@@ -685,7 +691,12 @@ public class JCommander {
 
       JCommander jc = findCommandByAlias(arg);
       int increment = 1;
-      if (isOption(args, a) && jc == null) {
+      if (!optionsTerminated && isTerminating(arg)) {
+        p("Marking options as terminated");
+        optionsTerminated = true;
+        i++;
+        continue;
+      } else if (isOption(args, a) && jc == null && !optionsTerminated) {
         //
         // Option
         //
@@ -815,6 +826,7 @@ public class JCommander {
 
   private boolean m_caseSensitiveOptions = true;
   private boolean m_allowAbbreviatedOptions = false;
+  private String m_optionTerminator = null;
 
   /**
    * @return the number of options that were processed.
@@ -1562,6 +1574,10 @@ public class JCommander {
 
   public List<String> getUnknownOptions() {
     return m_unknownArgs;
+  }
+
+  public void setOptionTerminator(String s) {
+    m_optionTerminator = s;
   }
 
 //  public void setCaseSensitiveCommands(boolean b) {

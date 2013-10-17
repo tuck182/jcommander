@@ -635,10 +635,10 @@ public class JCommanderTest {
 
   public static class BaseArgs {
     @Parameter(names = { "-h", "--help" }, description = "Show this help screen")
-    private boolean help = false;
+    public boolean help = false;
 
     @Parameter(names = { "--version", "-version" }, description = "Show the program version")
-    private boolean version;
+    public boolean version;
   }
 
   public void commandsWithSamePrefixAsOptionsShouldWork() {
@@ -647,6 +647,25 @@ public class JCommanderTest {
     JCommander jc = new JCommander(a);
     jc.addCommand(conf);
     jc.parse("--configure");
+  }
+  
+  public static class ArgsWithRemainder extends BaseArgs {
+    @Parameter(description = "Remaining arguments")
+    public List<String> remainder;
+  }
+
+  @Test
+  public void optionsAfterTerminationStringShouldParseAsParameters() {
+    ClassLoader classLoader = JCommanderTest.class.getClassLoader();
+
+    ArgsWithRemainder args = new ArgsWithRemainder();
+    String[] argv = { "--help", "--", "--version" };
+    JCommander jc = new JCommander(args);
+    jc.setOptionTerminator("--");
+    jc.parse(argv);
+    Assert.assertEquals(args.help, true);
+    Assert.assertEquals(args.version, false);
+    Assert.assertEquals(args.remainder, Arrays.asList(new String[] {"--version"}));
   }
 
   // Tests:
