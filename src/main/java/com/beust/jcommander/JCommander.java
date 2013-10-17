@@ -469,7 +469,6 @@ public class JCommander {
   }
 
   private boolean isTerminating(String arg) {
-    p(arg+".equals "+m_optionTerminator+" == "+arg.equals(m_optionTerminator));
     return arg.equals(m_optionTerminator);
   }
   
